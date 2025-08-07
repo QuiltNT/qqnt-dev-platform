@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -9,6 +9,7 @@ function createWindow(): void {
 		width: 900,
 		height: 670,
 		show: false,
+		frame: false,
 		autoHideMenuBar: true,
 		...(process.platform === 'linux' ? { icon } : {}),
 		webPreferences: {
@@ -42,6 +43,12 @@ function createWindow(): void {
 	} else {
 		mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
 	}
+
+	// main window ipc
+	ipcMain.handle('close', () => mainWindow.close());
+	ipcMain.handle('maximize', () => mainWindow.maximize());
+	ipcMain.handle('unmaximize', () => mainWindow.unmaximize());
+	ipcMain.handle('minimize', () => mainWindow.minimize());
 }
 
 // This method will be called when Electron has finished
@@ -49,7 +56,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
 	// Set app user model id for windows
-	electronApp.setAppUserModelId('com.electron');
+	electronApp.setAppUserModelId('io.github.quiltnt.qqnt-dev-platform');
 
 	// Default open or close DevTools by F12 in development
 	// and ignore CommandOrControl + R in production.
@@ -78,3 +85,8 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// let's inject plugin loader
+// require('D:/projects/LLQQNT-unofficial');
+require('quilt-nt');
+
