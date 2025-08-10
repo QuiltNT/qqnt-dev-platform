@@ -49,6 +49,18 @@ function createWindow(): void {
 	ipcMain.handle('maximize', () => mainWindow.maximize());
 	ipcMain.handle('unmaximize', () => mainWindow.unmaximize());
 	ipcMain.handle('minimize', () => mainWindow.minimize());
+
+	// simulate qqnt login
+	mainWindow.webContents.on('did-finish-load', () => {
+		mainWindow.webContents.send('IPC_DOWN_2', {
+			type: 'request',
+			eventName: 'ns-ntApi-2'
+		}, [{
+			cmdName: 'nodeIKernelSessionListener/onSessionInitComplete',
+			cmdType: 'event',
+			payload: {uid: 'quilt'}
+		}]);
+	});
 }
 
 // This method will be called when Electron has finished
